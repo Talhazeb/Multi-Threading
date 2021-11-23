@@ -11,7 +11,17 @@ import java.util.*;
 class App extends Thread {
     static BST b1 = new BST();
     static Vector<Vector<String>> tokenize = new Vector<Vector<String>>();
-    
+
+    public static void menu() {
+        System.out.println();
+        System.out.println(".....::::: MENU :::::.....");
+        System.out.println("1) Displaying BST build from Vocabulary File.");
+        System.out.println("2) Displaying Vectors build from Input files.");
+        System.out.println("3) Viewing Match words and its frequency");
+        System.out.println("4) Searching a query->It should display all the files query found in.");
+        System.out.println("5) Enter 5 for Exiting");
+        System.out.println();
+    }
 
     public void run() {
 
@@ -31,11 +41,9 @@ class App extends Thread {
             }
         }
 
-        for(int i = 0; i < tokenize.size(); i++)
-        {
-            
-            if(currentThread().getName().compareTo(tokenize.get(i).get(0)) == 0)
-            {
+        for (int i = 0; i < tokenize.size(); i++) {
+
+            if (currentThread().getName().compareTo(tokenize.get(i).get(0)) == 0) {
                 try {
                     String line = "";
                     BufferedReader br = Files.newBufferedReader(path, charset);
@@ -56,14 +64,13 @@ class App extends Thread {
     }
 
     public static void main(String[] args) {
-        for (int i = 1 ; i < args.length ; i++)
-        {
+        for (int i = 1; i < args.length; i++) {
             Vector test = new Vector();
             tokenize.add(test);
         }
 
-        for(int i = 1; i < args.length; i++) {
-            tokenize.get(i-1).add(args[i]);
+        for (int i = 1; i < args.length; i++) {
+            tokenize.get(i - 1).add(args[i]);
         }
 
         // File Names and Number of Files
@@ -76,20 +83,12 @@ class App extends Thread {
             App a1 = new App();
             a1.setName(args[i]);
             a1.start();
-            
+
         }
 
         int option;
         while (true) {
-            System.out.println();
-            System.out.println(".....::::: MENU :::::.....");
-            System.out.println("1) Displaying BST build from Vocabulary File.");
-            System.out.println("2) Displaying Vectors build from Input files.");
-            System.out.println("3) Viewing Match words and its frequency");
-            System.out.println("4) Searching a query->It should display all the files query found in.");
-            System.out.println("5) Enter 5 for Exiting");
-
-            System.out.println();
+            menu();
             System.out.print("Input Option: ");
             Scanner opt = new Scanner(System.in);
             option = opt.nextInt();
@@ -97,7 +96,6 @@ class App extends Thread {
             // --------------------------------------------------------------------------------------
 
             if (option == 1) {
-
                 // Making BST tree
                 System.out.println();
                 System.out.println("Displaying BST build from Vocabulary File");
@@ -108,7 +106,6 @@ class App extends Thread {
             // --------------------------------------------------------------------------------------
 
             else if (option == 2) {
-
                 System.out.println();
                 System.out.println("Displaying Vectors build from Input files");
                 System.out.println("-----------------------------------------");
@@ -123,12 +120,7 @@ class App extends Thread {
             // --------------------------------------------------------------------------------------
 
             else if (option == 3) {
-                word[] w1 = new word[100];
-                for (int i = 0; i < 100; i++) {
-                    w1[i] = new word();
-                }
-                int word_count = 0;
-
+                Vector<word> w1 = new Vector<word>();
                 for (int i = 0; i < tokenize.size(); i++) {
                     for (int j = 1; j < tokenize.get(i).size(); j++) {
 
@@ -137,16 +129,19 @@ class App extends Thread {
                         if (check == true) {
                             // Checking word repetition
                             Boolean check_word = false;
-                            for (int k = 0; k <= word_count; k++) {
-                                if (w1[k].word1.compareTo(tokenize.get(i).get(j)) == 0) {
-                                    w1[k].frequency++;
+                            for (int k = 0; k < w1.size(); k++) {
+                                if (w1.get(k).word1.compareTo(tokenize.get(i).get(j)) == 0) {
+                                    w1.get(k).frequency++;
                                     check_word = true;
                                 }
                             }
+
                             if (check_word == false) {
-                                w1[word_count].word1 = tokenize.get(i).get(j);
-                                w1[word_count].frequency++;
-                                word_count++;
+                                word temp = new word();
+                                temp.word1 = tokenize.get(i).get(j);
+                                temp.frequency++;
+                                w1.add(temp);
+
                             }
                         }
                     }
@@ -156,8 +151,8 @@ class App extends Thread {
                 System.out.println("Viewing Matched Words and Frequency");
                 System.out.println("-----------------------------------");
                 System.out.println("Word\tFrequency");
-                for (int i = 0; i < word_count; i++) {
-                    System.out.println(w1[i].word1 + "\t" + w1[i].frequency);
+                for (int i = 0; i < w1.size(); i++) {
+                    System.out.println(w1.get(i).word1 + "\t" + w1.get(i).frequency);
                 }
 
             }
@@ -172,26 +167,24 @@ class App extends Thread {
                 String[] query_split = query.split(" ");
 
                 for (int i = 0; i < tokenize.size(); i++) {
-                    word[] w2 = new word[100];
-                    for (int x = 0; x < 100; x++) {
-                        w2[x] = new word();
-                    }
-                    int word_count_2 = 0;
+                    Vector<word> w2 = new Vector<word>();
+
                     for (int m = 0; m < query_split.length; m++) {
                         for (int j = 1; j < tokenize.get(i).size(); j++) {
 
                             if (query_split[m].compareTo(tokenize.get(i).get(j)) == 0) {
                                 Boolean check_word = false;
-                                for (int k = 0; k <= word_count_2; k++) {
-                                    if (w2[k].word1.compareTo(tokenize.get(i).get(j)) == 0) {
-                                        w2[k].frequency++;
+                                for (int k = 0; k < w2.size(); k++) {
+                                    if (w2.get(k).word1.compareTo(tokenize.get(i).get(j)) == 0) {
+                                        w2.get(k).frequency++;
                                         check_word = true;
                                     }
                                 }
                                 if (check_word == false) {
-                                    w2[word_count_2].word1 = tokenize.get(i).get(j);
-                                    w2[word_count_2].frequency++;
-                                    word_count_2++;
+                                    word temp = new word();
+                                    temp.word1 = tokenize.get(i).get(j);
+                                    temp.frequency++;
+                                    w2.add(temp);
                                 }
                             }
                         }
@@ -201,8 +194,8 @@ class App extends Thread {
                     System.out.println("inputfile" + ++temp + ".txt");
                     System.out.println("------------");
                     System.out.println("Word\tFrequency");
-                    for (int z = 0; z < word_count_2; z++) {
-                        System.out.println(w2[z].word1 + "\t" + w2[z].frequency);
+                    for (int z = 0; z < w2.size(); z++) {
+                        System.out.println(w2.get(z).word1 + "\t" + w2.get(z).frequency);
                     }
                 }
             }
