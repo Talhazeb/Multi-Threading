@@ -1,12 +1,70 @@
 package multi_threading;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
-class App {
+class App extends Thread {
+    static BST b1 = new BST();
+    static Vector<Vector<String>> tokenize = new Vector<Vector<String>>();
+    
+
+    public void run() {
+
+        Charset charset = Charset.forName("UTF-8");
+        Path path = Paths.get(currentThread().getName());
+        if (currentThread().getName().compareTo("vocabulary.txt") == 0) {
+            try {
+                String line = "";
+                BufferedReader br = Files.newBufferedReader(path, charset);
+                while ((line = br.readLine()) != null) {
+                    String temp = line;
+                    b1.insert(temp);
+                }
+                br.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for(int i = 0; i < tokenize.size(); i++)
+        {
+            
+            if(currentThread().getName().compareTo(tokenize.get(i).get(0)) == 0)
+            {
+                try {
+                    String line = "";
+                    BufferedReader br = Files.newBufferedReader(path, charset);
+                    while ((line = br.readLine()) != null) {
+                        String[] temp = line.split(" ");
+                        int k = 0;
+                        for (int j = 1; j < temp.length; j++) {
+                            tokenize.get(i).add(j, temp[k]);
+                            k++;
+                        }
+                    }
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
+        for (int i = 1 ; i < args.length ; i++)
+        {
+            Vector test = new Vector();
+            tokenize.add(test);
+        }
+
+        for(int i = 1; i < args.length; i++) {
+            tokenize.get(i-1).add(args[i]);
+        }
 
         // File Names and Number of Files
         System.out.println("Number of Files: " + args.length);
@@ -14,12 +72,15 @@ class App {
             System.out.println(args[i]);
         }
 
-        // Initializations
-        BST b1 = new BST();
-        List<ArrayList<String>> tokenize = new ArrayList<>();
+        for (int i = 0; i < args.length; i++) {
+            App a1 = new App();
+            a1.setName(args[i]);
+            a1.start();
+            
+        }
 
         int option;
-        while(true) {
+        while (true) {
             System.out.println();
             System.out.println(".....::::: MENU :::::.....");
             System.out.println("1) Displaying BST build from Vocabulary File.");
@@ -33,24 +94,9 @@ class App {
             Scanner opt = new Scanner(System.in);
             option = opt.nextInt();
 
-            
             // --------------------------------------------------------------------------------------
 
             if (option == 1) {
-
-                // File Reading and Storing Vocabulary words.
-
-                try {
-                    String line = "";
-                    BufferedReader br = new BufferedReader(new FileReader(args[0]));
-                    while ((line = br.readLine()) != null) {
-                        String temp = line;
-                        b1.insert(temp);
-                    }
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
                 // Making BST tree
                 System.out.println();
@@ -63,31 +109,11 @@ class App {
 
             else if (option == 2) {
 
-                // Vector<String> tokenize = new Vector<String>();
-
-                for (int i = 1; i < args.length; i++) {
-                    try {
-                        String line = "";
-                        BufferedReader br = new BufferedReader(new FileReader(args[i]));
-                        while ((line = br.readLine()) != null) {
-                            String[] temp = line.split(" ");
-                            ArrayList<String> data = new ArrayList<String>();
-                            for (int j = 0; j < temp.length; j++) {
-                                data.add(temp[j]);
-                            }
-                            tokenize.add(data);
-                        }
-                        br.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
                 System.out.println();
                 System.out.println("Displaying Vectors build from Input files");
                 System.out.println("-----------------------------------------");
                 for (int i = 0; i < tokenize.size(); i++) {
-                    for (int j = 0; j < tokenize.get(i).size(); j++) {
+                    for (int j = 1; j < tokenize.get(i).size(); j++) {
                         System.out.print(tokenize.get(i).get(j) + " ");
                     }
                     System.out.println();
@@ -104,7 +130,7 @@ class App {
                 int word_count = 0;
 
                 for (int i = 0; i < tokenize.size(); i++) {
-                    for (int j = 0; j < tokenize.get(i).size(); j++) {
+                    for (int j = 1; j < tokenize.get(i).size(); j++) {
 
                         Boolean check = false;
                         check = b1.compare(tokenize.get(i).get(j));
@@ -152,7 +178,7 @@ class App {
                     }
                     int word_count_2 = 0;
                     for (int m = 0; m < query_split.length; m++) {
-                        for (int j = 0; j < tokenize.get(i).size(); j++) {
+                        for (int j = 1; j < tokenize.get(i).size(); j++) {
 
                             if (query_split[m].compareTo(tokenize.get(i).get(j)) == 0) {
                                 Boolean check_word = false;
