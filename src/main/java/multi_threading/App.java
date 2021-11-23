@@ -12,7 +12,7 @@ class App extends Thread {
     static BST b1 = new BST();
     static Vector<Vector<String>> tokenize = new Vector<Vector<String>>();
 
-    public static void menu() {
+    public static int menu() {
         System.out.println();
         System.out.println(".....::::: MENU :::::.....");
         System.out.println("1) Displaying BST build from Vocabulary File.");
@@ -21,6 +21,14 @@ class App extends Thread {
         System.out.println("4) Searching a query->It should display all the files query found in.");
         System.out.println("5) Enter 5 for Exiting");
         System.out.println();
+        System.out.print("Input Option: ");
+        Scanner opt = new Scanner(System.in);
+        int option = opt.nextInt();
+        if (option < 1 || option > 5) {
+            option = 0;
+            throw new MenuOptionException("Option input cannot be less than 1 or greater than 5");
+        } else
+            return option;
     }
 
     public void run() {
@@ -84,13 +92,20 @@ class App extends Thread {
 
         }
 
-
-        int option;
+        int option = 0;
         while (true) {
-            menu();
-            System.out.print("Input Option: ");
-            Scanner opt = new Scanner(System.in);
-            option = opt.nextInt();
+            Boolean check_option = false;
+            while (check_option == false) {
+                try {
+                    option = menu();
+                    if(option>0 && option <6)
+                    {
+                        check_option = true;
+                    }
+                } catch (MenuOptionException e) {
+                    System.out.println(e);
+                }
+            }
 
             // --------------------------------------------------------------------------------------
 
