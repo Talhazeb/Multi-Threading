@@ -49,10 +49,8 @@ class App extends Thread {
                     BufferedReader br = Files.newBufferedReader(path, charset);
                     while ((line = br.readLine()) != null) {
                         String[] temp = line.split(" ");
-                        int k = 0;
-                        for (int j = 1; j < temp.length; j++) {
-                            tokenize.get(i).add(j, temp[k]);
-                            k++;
+                        for (int k = 0; k < temp.length; k++) {
+                            tokenize.get(i).add(temp[k]);
                         }
                     }
                     br.close();
@@ -85,6 +83,7 @@ class App extends Thread {
             a1.start();
 
         }
+
 
         int option;
         while (true) {
